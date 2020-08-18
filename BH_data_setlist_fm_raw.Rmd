@@ -1,0 +1,160 @@
+---
+title: "for Github"
+author: "NG"
+date: "August 18, 2020"
+output: html_document
+---
+
+
+
+# load necessary packages 
+
+
+```{r}
+library(purrr)
+library(rvest)
+```
+
+
+# Download dates of concerts: YEAR
+
+```{r}
+url_base <-"https://www.setlist.fm/setlists/beach-house-2bd6e81a.html?page=%d"
+map_df(2:68, function(i){
+  page <-read_html(sprintf(url_base, i))
+  data.frame(Year = html_text(html_nodes(page, ".year" ))
+             
+             )
+          
+})-> Year
+Year
+```
+
+
+# Download dates of concerts: Month
+```{r}
+url_base <-"https://www.setlist.fm/setlists/beach-house-2bd6e81a.html?page=%d"
+map_df(2:68, function(i){
+  page <-read_html(sprintf(url_base, i))
+  data.frame(Month = html_text(html_nodes(page, ".month" ))
+             
+             )
+          
+})-> Month
+Month
+```
+
+
+# Download dates of concerts: Day
+```{r}
+url_base <-"https://www.setlist.fm/setlists/beach-house-2bd6e81a.html?page=%d"
+map_df(2:68, function(i){
+  page <-read_html(sprintf(url_base, i))
+  data.frame(Day = html_text(html_nodes(page, ".day" ))
+             
+             )
+          
+})-> Day
+Day
+```
+
+
+# Combine them and create a common id
+
+```{r}
+library(tidyverse)
+library(dplyr)
+BH <-cbind(Year, Month, Day)
+BH <-dplyr::mutate(BH, ID = row_number())
+BH
+```
+
+
+# add Countries, cities, and venues:
+
+#1 download countries 
+
+```{r}
+url_base <-"https://www.setlist.fm/setlists/beach-house-2bd6e81a.html?page=%d"
+map_df(2:68, function(i){
+  page <-read_html(sprintf(url_base, i))
+  data.frame(Country = html_text(html_nodes(page, ".country-name" ))
+             
+             )
+          
+})-> Country
+Country
+```
+
+
+
+
+#2 download cities
+```{r}
+url_base <-"https://www.setlist.fm/setlists/beach-house-2bd6e81a.html?page=%d"
+map_df(2:68, function(i){
+  page <-read_html(sprintf(url_base, i))
+  data.frame(City = html_text(html_nodes(page, ".locality" ))
+             
+             )
+          
+})-> City
+City
+```
+
+
+
+#3 download venues
+
+```{r}
+url_base <-"https://www.setlist.fm/setlists/beach-house-2bd6e81a.html?page=%d"
+map_df(2:68, function(i){
+  page <-read_html(sprintf(url_base, i))
+  data.frame(Venue = html_text(html_nodes(page, ".org" ))
+             
+             )
+          
+})-> Venue
+Venue
+```
+
+
+# add Country, City, and Venue to the main dataframe 
+
+```{r}
+BH <-cbind(BH, Country, City, Venue)
+BH
+```
+
+# write a csv file for beach house
+
+```{r}
+write.csv(BH, "beach_house.csv")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
